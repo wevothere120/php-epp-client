@@ -16,8 +16,6 @@ C:</epp>
 
 class eppTransferDomainRequest extends eppDomainRequest {
 
-    private $domainobject;
-
     const OPERATION_QUERY = 'query';
     const OPERATION_REQUEST = 'request';
     const OPERATION_APPROVE = 'approve';
