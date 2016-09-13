@@ -14,7 +14,7 @@ namespace Metaregistrar\EPP;
 C:</epp>
  */
 
-class eppTransferDomainRequest extends eppRequest {
+class eppTransferDomainRequest extends eppDomainRequest {
 
     private $domainobject;
 
@@ -28,7 +28,7 @@ class eppTransferDomainRequest extends eppRequest {
         if (defined("NAMESPACESINROOT")) {
             $this->setNamespacesinroot(NAMESPACESINROOT);
         }
-        parent::__construct();
+        parent::__construct('transfer');
 
         if ($domain instanceof eppDomain) {
             if (!strlen($domain->getDomainname())) {
