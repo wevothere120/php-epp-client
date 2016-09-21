@@ -80,6 +80,7 @@ class eppPollTest extends eppTestCase {
         $this->assertSame($pollResponse->getMessageCount(),'5');
         $this->assertSame($pollResponse->getMessage(),'Transfer requested.');
         $this->assertSame($pollResponse->getResultCode(),'1301');
+        $this->assertSame($pollResponse->getResultMessage(),'Command completed successfully; ack to dequeue');
         $this->assertSame($pollResponse->getMessageId(),'12345');
         $this->assertSame($pollResponse->getMessageDate(),'2000-06-08T22:00:00.0Z');
         $this->assertSame($pollResponse->getMessageType(),'trn');
@@ -121,11 +122,17 @@ class eppPollTest extends eppTestCase {
         $this->assertSame($pollResponse->getMessageCount(),'1');
         $this->assertSame($pollResponse->getMessage(),'Domain transfertest.frl renewed.');
         $this->assertSame($pollResponse->getResultCode(),'1301');
+        $this->assertSame($pollResponse->getResultMessage(),'Command completed successfully; ack to dequeue');
         $this->assertSame($pollResponse->getMessageId(),'100');
         $this->assertSame($pollResponse->getMessageDate(),'2016-09-20T14:49:27.000000+0200');
         $this->assertSame($pollResponse->getMessageType(),'ren');
         $this->assertSame($pollResponse->getDomainName(),'transfertest.frl');
         $this->assertSame($pollResponse->getDomainExpirationDate(),'2019-09-20T07:55:35.000000+0000');
+        $this->assertNull($pollResponse->getDomainRequestClientId());
+        $this->assertNull($pollResponse->getDomainActionClientId());
+        $this->assertNull($pollResponse->getDomainRequestDate());
+        $this->assertNull($pollResponse->getDomainTrStatus());
+
     }
 
 }
