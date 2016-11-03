@@ -10,7 +10,7 @@ class metaregEppConnection extends eppConnection {
         parent::useExtension('command-ext-1.0');
         //parent::useExtension('ext-1.0');
         $this->enableDnssec();
-        //$this->enableRgp();
+        $this->enableRgp();
         //parent::enableLaunchphase('claims');
     }
 
