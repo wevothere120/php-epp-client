@@ -146,21 +146,26 @@ class eppUpdateContactRequest extends eppContactRequest {
             $element->appendChild($authinfo);
         }
         if (!is_null($contact->getDisclose())) {
+            $type = $contact->getType();
+            if ($type == $contact::TYPE_AUTO) {
+                $type = $contact::TYPE_LOC;
+            }
             $disclose = $this->createElement('contact:disclose');
             $disclose->setAttribute('flag',$contact->getDisclose());
             $name = $this->createElement('contact:name');
             if ($contact->getDisclose()==1) {
-                $name->setAttribute('type','loc');
+
+                $name->setAttribute('type',$type);
             }
             $disclose->appendChild($name);
             $org = $this->createElement('contact:org');
             if ($contact->getDisclose()==1) {
-                $org->setAttribute('type','loc');
+                $org->setAttribute('type',$type);
             }
             $disclose->appendChild($org);
             $addr = $this->createElement('contact:addr');
             if ($contact->getDisclose()==1) {
-                $addr->setAttribute('type','loc');
+                $addr->setAttribute('type',$type);
             }
             $disclose->appendChild($addr);
             $disclose->appendChild($this->createElement('contact:voice'));
