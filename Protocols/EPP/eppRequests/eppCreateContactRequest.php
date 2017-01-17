@@ -41,7 +41,7 @@ class eppCreateContactRequest extends eppContactRequest {
         #
         # Object create structure
         #
-        $this->setContactId( $contact->generateContactId());
+        $this->setContactId($contact->getId());
         $this->setPostalInfo($contact->getPostalInfo(0));
         $this->setVoice($contact->getVoice());
         $this->setFax($contact->getFax());

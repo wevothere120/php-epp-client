@@ -5,7 +5,9 @@ class ficoraEppInfoContactResponse extends eppInfoContactResponse {
 
     /**
      * A helper function for retriving xpath query results.
-     * @return mixed query result or null if missing
+     * @param $query
+     * @param null $cast
+     * @return mixed query result as string or casted type or null if missing
      */
     protected function getXpathQueryResult($query, $cast = null)
     {
