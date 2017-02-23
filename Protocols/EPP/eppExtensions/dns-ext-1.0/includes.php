@@ -1,5 +1,8 @@
 <?php
+$this->addExtension('dns-ext-1.0','http://www.metaregistrar.com/epp/dns-ext-1.0');
+
 include_once(dirname(__FILE__) . '/eppRequests/metaregDnsRequest.php');
+
 include_once(dirname(__FILE__) . '/eppRequests/metaregCreateDnsRequest.php');
 include_once(dirname(__FILE__) . '/eppResponses/metaregCreateDnsResponse.php');
 $this->addCommandResponse('Metaregistrar\EPP\metaregCreateDnsRequest', 'Metaregistrar\EPP\metaregCreateDnsResponse');
