@@ -168,7 +168,7 @@ class eppCheckDomainTest extends eppTestCase {
                 $this->assertArrayHasKey('available',$check);
                 $this->assertFalse($check['available']);
                 $this->assertArrayHasKey('reason',$check);
-                $this->assertSame('Domainname is invalid.',$check['reason']);
+                $this->assertSame('invalid tld',$check['reason']);
             }
         }
     }
