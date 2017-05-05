@@ -101,7 +101,7 @@ class eppDnssecUpdateDomainRequest extends eppUpdateDomainRequest {
             }
         }
         if ($secdns_updated) {
-            $this->getExtension()->appendchild($secdns);
+            $this->getExtension()->appendChild($secdns);
         }
         $this->addSessionId();
     }

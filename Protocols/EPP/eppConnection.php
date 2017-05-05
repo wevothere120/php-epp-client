@@ -586,66 +586,6 @@ class eppConnection {
         return false;
     }
 
-    /**
-     * Writes a request object to the stream
-     *
-     * @param eppRequest $content
-     * @return boolean
-     * @throws eppException
-     */
-    public function writeRequest(eppRequest $content)
-    {
-        //$requestsessionid = $content->getSessionId();
-        $namespaces = $this->getDefaultNamespaces();
-        if (is_array($namespaces)) {
-            foreach ($namespaces as $id => $namespace) {
-                $content->addExtension($id, $namespace);
-            }
-        }
-        // add the connectionComment to the request's epp element
-        if(is_string($this->connectionComment))
-        {
-            $content->epp->appendChild($content->createComment($this->connectionComment));
-        }
-        /*
-         * $content->login is only set if this is an instance or a sub-instance of an eppLoginRequest
-         */
-        if ($content->login) {
-            /* @var $content eppLoginRequest */
-            // Set username for login request
-            $content->addUsername($this->getUsername());
-            // Set password for login request
-            $content->addPassword($this->getPassword());
-            // Set 'new password' for login request
-            if ($this->getNewPassword()) {
-                $content->addNewPassword($this->getNewPassword());
-            }
-            // Add version to this object
-            $content->addVersion($this->getVersion());
-            // Add language to this object
-            $content->addLanguage($this->getLanguage());
-            // Add services and extensions to this content
-            $content->addServices($this->getServices(), $this->getExtensions());
-        }
-        /*
-         * $content->hello is only set if this is an instance or a sub-instance of an eppHelloRequest
-         */
-        if (!($content->hello)) {
-            /**
-             * Add used namespaces to the correct places in the XML
-             */
-            $content->addNamespaces($this->getServices());
-            $content->addNamespaces($this->getExtensions());
-        }
-        $content->formatOutput = false;
-        if ($this->write($content->saveXML(null, LIBXML_NOEMPTYTAG))) {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
     /**
      * Reads a response asynchronously.
@@ -715,12 +655,7 @@ class eppConnection {
      */
     public function writeandread($content) {
         $requestsessionid = $content->getSessionId();
-        $namespaces = $this->getDefaultNamespaces();
-        if (is_array($namespaces)) {
-            foreach ($namespaces as $id => $namespace) {
-                $content->addExtension($id, $namespace);
-            }
-        }
+
         // add the connectionComment to the request's epp element
         if(is_string($this->connectionComment))
         {
@@ -964,44 +899,34 @@ class eppConnection {
         $this->exturi = $extensions;
     }
 
+
     /**
+     * Indicate a connection is going to use a specific extension and load the includes
+     * @param string $namespace
+     * @throws eppException
+     */
+    public function useExtension($namespace) {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $includepath = dirname(__FILE__).'\\eppExtensions\\'.$namespace.'\\includes.php';
+        } else {
+            $includepath = dirname(__FILE__).'/eppExtensions/'.$namespace.'/includes.php';
+        }
+        if (is_file($includepath)) {
+            include($includepath);
+        } else {
+            throw new eppException("Unable to use extension $namespace because extension files cannot be located");
+        }
+    }
+
+    /**
+     * Add an extension to the Login command of the EPP connection
+     * The login command will specify which extensions will be used in this session
+     *
      * @param string $xmlns
      * @param string $namespace
      */
     public function addExtension($xmlns, $namespace) {
         $this->exturi[$namespace] = $xmlns;
-        // Include the extension data, request and response files
-        $pos = strrpos($namespace,'/');
-        if ($pos!==false) {
-            $path = substr($namespace,$pos+1,999);
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                $includepath = dirname(__FILE__).'\\eppExtensions\\'.$path.'\\includes.php';
-            } else {
-                $includepath = dirname(__FILE__).'/eppExtensions/'.$path.'/includes.php';
-            }
-
-        } else {
-            $pos = strrpos($namespace,':');
-            if ($pos!==false) {
-                $path = substr($namespace,$pos+1,999);
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                    $includepath = dirname(__FILE__).'\\eppExtensions\\'.$path.'\\includes.php';
-                } else {
-                    $includepath = dirname(__FILE__).'/eppExtensions/'.$path.'/includes.php';
-                }
-
-            } else {
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                    $includepath = dirname(__FILE__).'\\eppExtensions\\'.$namespace.'\\includes.php';
-                } else {
-                    $includepath = dirname(__FILE__).'/eppExtensions/'.$namespace.'/includes.php';
-                }
-
-            }
-        }
-        if (is_file($includepath)) {
-            include_once($includepath);
-        }
     }
 
     public function removeExtension($namespace) {
