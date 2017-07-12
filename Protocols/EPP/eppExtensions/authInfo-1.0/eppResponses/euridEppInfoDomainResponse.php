@@ -38,6 +38,20 @@ class euridEppInfoDomainResponse extends eppInfoDomainResponse {
         return $cont;
     }
 
+    /**
+     * Get the date until the auth code is valie
+     * @return null|string
+     */
+    public function getAuthorisationCodeValidDate() {
+        $xpath = $this->xPath();
+        $result = $xpath->query('/epp:epp/epp:response/epp:extension/authInfo:infData/authInfo:validUntil');
+        if ($result->length > 0) {
+            return $result->item(0)->nodeValue;
+        } else {
+            return null;
+        }
+    }
+
 
     /**
      *
