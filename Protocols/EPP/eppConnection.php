@@ -1035,7 +1035,12 @@ class eppConnection {
                     $text = substr($text,0,$start+4).'XXXXXXXXXXXXXXXX'.substr($text,$end+3,99999);
                 }
             }
-
+            // Hiding password in the logging
+            if (($start = strpos($text,'<pw>')) !== false) {
+                if (($end = strpos($text,'</pw>')) !== false) {
+                    $text = substr($text,0,$start+4).'XXXXXXXXXXXXXXXX'.substr($text,$end,99999);
+                }
+            }
             $this->logentries[] = "-----" . $action . "-----" . date("Y-m-d H:i:s") . "-----\n" . $text . "\n-----END-----" . date("Y-m-d H:i:s") . "-----\n";
         }
     }
