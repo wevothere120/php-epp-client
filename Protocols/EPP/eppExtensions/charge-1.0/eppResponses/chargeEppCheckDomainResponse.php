@@ -31,6 +31,7 @@ class chargeEppCheckDomainResponse extends eppCheckDomainResponse {
     }
 
     public function getChargeDomainName() {
+
         $xpath = $this->xPath();
         $result = $xpath->query('/epp:epp/epp:response/epp:extension/charge:chkData/charge:cd/charge:name');
         if ($result->length > 0) {
