@@ -14,9 +14,12 @@ class eppDomainRequest extends eppRequest {
      */
     public $domainobject = null;
 
-    function __construct($type) {
+    function __construct($type, $operation = null) {
         parent::__construct();
         $object = $this->createElement($type);
+        if ($operation) {
+            $object->setAttribute('op', $operation);
+        }
         $this->domainobject = $this->createElement('domain:'.$type);
         $this->setNamespace('xmlns:domain','urn:ietf:params:xml:ns:domain-1.0', $this->domainobject);
         $object->appendChild($this->domainobject);

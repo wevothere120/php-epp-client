@@ -26,7 +26,7 @@ class eppTransferDomainRequest extends eppDomainRequest {
         if (defined("NAMESPACESINROOT")) {
             $this->setNamespacesinroot(NAMESPACESINROOT);
         }
-        parent::__construct('transfer');
+        parent::__construct('transfer', $operation);
 
         if ($domain instanceof eppDomain) {
             if (!strlen($domain->getDomainname())) {
@@ -40,13 +40,11 @@ class eppTransferDomainRequest extends eppDomainRequest {
         #
         switch ($operation) {
             case self::OPERATION_REQUEST:
-                $this->setDomainRequest($domain);
-                break;
             case self::OPERATION_QUERY:
             case self::OPERATION_CANCEL:
             case self::OPERATION_APPROVE:
             case self::OPERATION_REJECT:
-                $this->setDomain($domain,$operation);
+                $this->setDomain($domain);
                 break;
             default:
                 throw new eppException('Operation parameter needs to be QUERY, REQUEST, CANCEL, APPROVE or REJECT on eppDomainTransferRequest');
@@ -66,44 +64,27 @@ class eppTransferDomainRequest extends eppDomainRequest {
      * @param eppDomain $domain
      * @param string $operation
      */
-    public function setDomain(eppDomain $domain, $operation) {
+    public function setDomain(eppDomain $domain) {
         #
         # Object create structure
         #
-        $transfer = $this->createElement('transfer');
-        $transfer->setAttribute('op', $operation);
-        $this->domainobject = $this->createElement('domain:transfer');
-        $this->domainobject->appendChild($this->createElement('domain:name', $domain->getDomainname()));
-        if (strlen($domain->getAuthorisationCode())) {
-            $authinfo = $this->createElement('domain:authInfo');
-            $authinfo->appendChild($this->createElement('domain:pw', $domain->getAuthorisationCode()));
-            $this->domainobject->appendChild($authinfo);
-        }
-        $transfer->appendChild($this->domainobject);
-        $this->getCommand()->appendChild($transfer);
-    }
+        if ($this->domainobject) {
+            $this->domainobject->appendChild($this->createElement('domain:name', $domain->getDomainname()));
+            if (strlen($domain->getAuthorisationCode())) {
+                $authinfo = $this->createElement('domain:authInfo');
+                $authinfo->appendChild($this->createElement('domain:pw', $domain->getAuthorisationCode()));
+                $this->domainobject->appendChild($authinfo);
 
+            }
+            if ($domain->getPeriod()) {
+                $domainperiod = $this->createElement('domain:period', $domain->getPeriod());
+                $domainperiod->setAttribute('unit', eppDomain::DOMAIN_PERIOD_UNIT_Y);
+                $this->domainobject->appendChild($domainperiod);
+            }
+        } else {
+            throw new eppException("Transfer object missing from structure");
+        }
 
-    public function setDomainRequest(eppDomain $domain) {
-        #
-        # Object create structure
-        #
-        $transfer = $this->createElement('transfer');
-        $transfer->setAttribute('op', self::OPERATION_REQUEST);
-        $this->domainobject = $this->createElement('domain:transfer');
-        $this->domainobject->appendChild($this->createElement('domain:name', $domain->getDomainname()));
-        if ($domain->getPeriod()) {
-            $domainperiod = $this->createElement('domain:period', $domain->getPeriod());
-            $domainperiod->setAttribute('unit', eppDomain::DOMAIN_PERIOD_UNIT_Y);
-            $this->domainobject->appendChild($domainperiod);
-        }
-        if (strlen($domain->getAuthorisationCode())) {
-            $authinfo = $this->createElement('domain:authInfo');
-            $authinfo->appendChild($this->createElement('domain:pw', $domain->getAuthorisationCode()));
-            $this->domainobject->appendChild($authinfo);
-        }
-        $transfer->appendChild($this->domainobject);
-        $this->getCommand()->appendChild($transfer);
     }
 
 }
