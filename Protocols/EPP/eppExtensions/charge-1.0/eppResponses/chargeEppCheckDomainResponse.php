@@ -41,11 +41,23 @@ class chargeEppCheckDomainResponse extends eppCheckDomainResponse {
         }
     }
 
-    public function getChargeCategoryName() {
+    public function getChargeCategory() {
         $xpath = $this->xPath();
         $result = $xpath->query('/epp:epp/epp:response/epp:extension/charge:chkData/charge:cd/charge:set/charge:category');
         if ($result->length > 0) {
             return $result->item(0)->nodeValue;
+        } else {
+            return null;
+        }
+    }
+
+    public function getChargeCategoryName() {
+        $xpath = $this->xPath();
+        $result = $xpath->query('/epp:epp/epp:response/epp:extension/charge:chkData/charge:cd/charge:set/charge:category');
+        if ($result->length > 0) {
+            $item = $result->item(0);
+            /* @var $item \domElement */
+            return $item->getAttribute('name');
         } else {
             return null;
         }
