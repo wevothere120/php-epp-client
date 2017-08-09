@@ -17,7 +17,7 @@ namespace Metaregistrar\EPP;
 </extension>
  */
 
-class chargeEppTransferRequest extends eppTransferRequest
+class chargeEppTransferDomainRequest extends eppTransferDomainRequest
 {
     function __construct($operation, $object, $category, $name, $type, $price)
     {
