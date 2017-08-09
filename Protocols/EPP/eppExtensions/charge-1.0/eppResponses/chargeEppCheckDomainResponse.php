@@ -64,9 +64,15 @@ class chargeEppCheckDomainResponse extends eppCheckDomainResponse {
 
     public function getChargePrices() {
         $xpath = $this->xPath();
-        $result = $xpath->query('/epp:epp/epp:response/epp:extension/charge:chkData/charge:cd/charge:set/charge:amount/*');
+        $result = $xpath->query('/epp:epp/epp:response/epp:extension/charge:chkData/charge:cd/charge:set/charge:amount');
         if ($result->length > 0) {
-            var_dump($result);
+            $prices = [];
+            for ($i = 0; $i < $result->length; $i++) {
+                $item = $result->item($i);
+                /* @var $item \domElement */
+                $prices[$item->getAttribute('command')] = $item->nodeValue;
+            }
+            return $prices;
         } else {
             return null;
         }
