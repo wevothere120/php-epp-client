@@ -32,7 +32,9 @@ class eppTransferContactRequest extends eppTransferRequest {
 
 				break;
 			case self::OPERATION_APPROVE:
-
+				if ($object instanceof eppContactHandle) {
+					$this->setContactApprove($object);
+				}
 				break;
 			case self::OPERATION_REJECT:
 
@@ -71,6 +73,23 @@ class eppTransferContactRequest extends eppTransferRequest {
 		#
 		$transfer = $this->createElement('transfer');
 		$transfer->setAttribute('op', self::OPERATION_REQUEST);
+		$this->contactobject = $this->createElement('contact:transfer');
+		$this->contactobject->appendChild($this->createElement('contact:id', $contact->getContactHandle()));
+		if (strlen($contact->getPassword())) {
+			$authinfo = $this->createElement('contact:authInfo');
+			$authinfo->appendChild($this->createElement('contact:pw', $contact->getPassword()));
+			$this->contactobject->appendChild($authinfo);
+		}
+		$transfer->appendChild($this->contactobject);
+		$this->getCommand()->appendChild($transfer);
+	}
+
+	public function setContactApprove(eppContactHandle $contact) {
+		#
+		# Object create structure
+		#
+		$transfer = $this->createElement('transfer');
+		$transfer->setAttribute('op', self::OPERATION_APPROVE);
 		$this->contactobject = $this->createElement('contact:transfer');
 		$this->contactobject->appendChild($this->createElement('contact:id', $contact->getContactHandle()));
 		if (strlen($contact->getPassword())) {
