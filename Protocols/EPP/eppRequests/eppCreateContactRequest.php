@@ -37,8 +37,8 @@ class eppCreateContactRequest extends eppContactRequest {
         #
         $this->setContactId($contact->getId());
         $this->setPostalInfo($contact->getPostalInfo(0));
-        $this->setVoice($contact->getVoice());
-        $this->setFax($contact->getFax());
+	    $this->setVoice($contact->getVoice(), $contact->getVoiceExt());
+	    $this->setFax($contact->getFax(), $contact->getFaxExt());
         $this->setEmail($contact->getEmail());
         $this->setPassword($contact->getPassword());
         $this->setDisclose($contact->getDisclose());
@@ -90,20 +90,33 @@ class eppCreateContactRequest extends eppContactRequest {
         $this->contactobject->appendChild($postalinfo);
     }
 
-    /**
-     * @param $voice
-     */
-    public function setVoice($voice) {
-        if ($voice) {
-            $this->contactobject->appendChild($this->createElement('contact:voice', $voice));
-        }
-    }
+	/**
+	 * @param $voice
+	 * @param $voiceExt
+	 */
+	public function setVoice($voice, $voiceExt) {
+		if ($voice) {
+			$voiceElem = $this->createElement('contact:voice', $voice);
 
-    public function setFax($fax) {
-        if ($fax) {
-            $this->contactobject->appendChild($this->createElement('contact:fax', $fax));
-        }
-    }
+			if ($voiceExt) {
+				$voiceElem->setAttribute('x', $voiceExt);
+			}
+
+			$this->contactobject->appendChild($voiceElem);
+		}
+	}
+
+	public function setFax($fax, $faxExt) {
+		if ($fax) {
+			$faxElem = $this->createElement('contact:fax', $fax);
+
+			if ($faxExt) {
+				$faxElem->setAttribute('x', $faxExt);
+			}
+
+			$this->contactobject->appendChild($faxElem);
+		}
+	}
 
     public function setEmail($email) {
         if ($email) {

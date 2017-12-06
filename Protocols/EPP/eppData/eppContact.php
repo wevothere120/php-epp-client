@@ -33,19 +33,21 @@ class eppContact {
     # These values can be set into the type field
     # Only LOC and INT are allowed, AUTO will automatically determine LOC or INT
     #
-    const TYPE_LOC = 'loc';
-    const TYPE_INT = 'int';
-    const TYPE_AUTO = 'auto';
+    const TYPE_LOC      = 'loc';
+    const TYPE_INT      = 'int';
+    const TYPE_AUTO     = 'auto';
 
-    private $id = null;
+    private $id         = null;
     private $postalInfo = array();
-    private $voice=null;
-    private $fax=null;
-    private $email=null;
-    private $password=null;
-    private $status=null;
-    private $type = self::TYPE_AUTO;
-    private $disclose = null;
+    private $voice      = null;
+    private $fax        = null;
+	private $voiceExt   = null;
+	private $faxExt     = null;
+    private $email      = null;
+    private $password   = null;
+    private $status     = null;
+    private $type       = self::TYPE_AUTO;
+    private $disclose   = null;
 
 
     /**
@@ -56,8 +58,11 @@ class eppContact {
      * @param string $fax
      * @param string $password
      * @param string $status
+     * @param string $voiceExt
+     * @param string $faxExt
+     * @throws eppException
      */
-    public function __construct($postalInfo = null, $email = null, $voice = null, $fax = null, $password = null, $status = null) {
+    public function __construct($postalInfo = null, $email = null, $voice = null, $fax = null, $password = null, $status = null, $voiceExt = null, $faxExt = null) {
         if ($postalInfo instanceof eppContactPostalInfo) {
             $this->addPostalInfo($postalInfo);
         } else {
@@ -73,7 +78,9 @@ class eppContact {
         $this->setEmail($email);
         $this->setPassword($password);
         $this->setVoice($voice);
+        $this->setVoiceExt($voiceExt);
         $this->setFax($fax);
+	    $this->setFaxExt($faxExt);
         $this->setStatus($status);
         $this->setPassword(self::generateRandomString(10));
     }
@@ -227,6 +234,43 @@ class eppContact {
     public function getFax() {
         return $this->fax;
     }
+
+	/**
+	 * Sets the voice extension
+	 * @param int $voiceExt
+	 * @return $this
+	 */
+	public function setVoiceExt($voiceExt) {
+		$this->voiceExt = $voiceExt;
+
+		return $this;
+	}
+	/**
+	 * Gets the voice extension
+	 * @return string
+	 */
+	public function getVoiceExt() {
+		return $this->voiceExt;
+	}
+
+	/**
+	 * Sets the fax extension
+	 * @param int $faxExt
+	 * @return $this
+	 */
+	public function setFaxExt($faxExt) {
+		$this->faxExt = $faxExt;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the fax extension
+	 * @return string
+	 */
+	public function getFaxExt() {
+		return $this->faxExt;
+	}
 
     /**
      * Formats the phone number according to SIDN formatting rules
