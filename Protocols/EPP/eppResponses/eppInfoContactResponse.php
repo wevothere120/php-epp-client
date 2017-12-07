@@ -94,6 +94,13 @@ class eppInfoContactResponse extends eppInfoResponse {
     public function getContactVoice() {
         return $this->queryPath('/epp:epp/epp:response/epp:resData/contact:infData/contact:voice');
     }
+	/**
+	 *
+	 * @return string voice_telephone_number_ext
+	 */
+	public function getContactVoiceExt() {
+		return $this->queryPath('/epp:epp/epp:response/epp:resData/contact:infData/contact:voice/@x');
+	}
 
     /**
      *
@@ -102,6 +109,13 @@ class eppInfoContactResponse extends eppInfoResponse {
     public function getContactFax() {
         return $this->queryPath('/epp:epp/epp:response/epp:resData/contact:infData/contact:fax');
     }
+	/**
+	 *
+	 * @return string fax_telephone_number_ext
+	 */
+	public function getContactFaxExt() {
+		return $this->queryPath('/epp:epp/epp:response/epp:resData/contact:infData/contact:fax/@x');
+	}
 
     /**
      *
