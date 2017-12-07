@@ -139,11 +139,11 @@ class eppInfoContactResponse extends eppInfoResponse {
         }
     }
 
-    public function getContactStreet() {
+    public function getContactStreet($id = 0) {
         $pi = $this->getContactPostalInfo();
         $postalInfo = $pi[0];
         if ($postalInfo instanceof eppContactPostalInfo) {
-            return $postalInfo->getStreet(0);
+            return $postalInfo->getStreet($id);
         } else {
             return null;
         }
