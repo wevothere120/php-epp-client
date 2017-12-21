@@ -280,6 +280,9 @@ class eppContact {
      */
     protected function validatePhoneNumber($number) {
         //Format the phone number according to EPP formatting rules.
+	    if ($number === false) {
+		    return false;
+	    }
         if (!strlen($number)) {
             return null;
         }
