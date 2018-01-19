@@ -76,13 +76,16 @@ class eppContact {
         }
         $this->setId($this->generateContactId());
         $this->setEmail($email);
-        $this->setPassword($password);
-        $this->setVoice($voice);
-        $this->setVoiceExt($voiceExt);
-        $this->setFax($fax);
+        if (!empty($password)) {
+	        $this->setPassword($password);
+        } else {
+	        $this->setPassword(self::generateRandomString(10));
+        }
+	    $this->setVoice($voice);
+	    $this->setVoiceExt($voiceExt);
+	    $this->setFax($fax);
 	    $this->setFaxExt($faxExt);
-        $this->setStatus($status);
-        $this->setPassword(self::generateRandomString(10));
+	    $this->setStatus($status);
     }
 
     public function setDisclose($disclose) {
