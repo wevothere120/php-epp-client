@@ -167,17 +167,19 @@ class eppDomain {
         return $this->period;
     }
 
-    public function setPeriod($period) {
-        if ($this->periodunit == self::DOMAIN_PERIOD_UNIT_Y) {
-            if (($period > 10) || ($period < 0)) {
-                throw new eppException("If period unit = y, period can only be 1 - 10");
-            }
-        }
-        if ($this->periodunit == self::DOMAIN_PERIOD_UNIT_M) {
-            if (($period > 120) || ($period < 0)) {
-                throw new eppException("If period unit = m, period can only be 1 - 120");
-            }
-        }
+    public function setPeriod($period, $skipCheck = false) {
+    	if (!$skipCheck) {
+		    if ( $this->periodunit == self::DOMAIN_PERIOD_UNIT_Y ) {
+			    if ( ( $period > 10 ) || ( $period < 0 ) ) {
+				    throw new eppException( "If period unit = y, period can only be 1 - 10" );
+			    }
+		    }
+		    if ( $this->periodunit == self::DOMAIN_PERIOD_UNIT_M ) {
+			    if ( ( $period > 120 ) || ( $period < 0 ) ) {
+				    throw new eppException( "If period unit = m, period can only be 1 - 120" );
+			    }
+		    }
+	    }
         $this->period = $period;
     }
 
