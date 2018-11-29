@@ -2,4 +2,6 @@ vendor/*
 !vendor/composer/
 .idea
 .ini
+.pem
 Tests/testsetup*
+.DS_Store

@@ -63,6 +63,12 @@ class eppConnection {
     protected $exturi;
 
     /**
+     * Exception extensions
+     * @var array of exception handlers
+     */
+    protected $exceptions = null;
+
+    /**
      * Base objects
      * @var array of accepted URI's for xpath
      */
@@ -285,9 +291,7 @@ class eppConnection {
 
     public function enableLaunchphase($launchphase) {
         $this->launchphase = $launchphase;
-        $this->addExtension('launch','urn:ietf:params:xml:ns:launch-1.0');
-        $this->responses['Metaregistrar\\EPP\\eppLaunchCheckRequest'] = 'Metaregistrar\\EPP\\eppLaunchCheckResponse';
-        $this->responses['Metaregistrar\\EPP\\eppLaunchCreateDomainRequest'] = 'Metaregistrar\\EPP\\eppLaunchCreateDomainResponse';
+        $this->useExtension('launch-1.0');
     }
 
     public function getLaunchphase() {
@@ -295,14 +299,12 @@ class eppConnection {
     }
 
     public function enableDnssec() {
-        $this->addExtension('secDNS','urn:ietf:params:xml:ns:secDNS-1.1');
-        $this->responses['Metaregistrar\\EPP\\eppDnssecUpdateDomainRequest'] = 'Metaregistrar\\EPP\\eppUpdateDomainResponse';
-        $this->responses['Metaregistrar\\EPP\\eppInfoDomainRequest'] = 'Metaregistrar\\EPP\\eppDnssecInfoDomainResponse';
+        $this->useExtension('secDNS-1.1');
     }
 
     public function enableRgp() {
-        $this->addExtension('rgp','urn:ietf:params:xml:ns:rgp-1.0');
-        $this->responses['Metaregistrar\\EPP\\eppRgpRestoreRequest'] = 'Metaregistrar\\EPP\\eppRgpRestoreResponse';
+        $this->useExtension('rgp-1.0');
+
     }
 
     public function disableRgp() {
@@ -465,6 +467,11 @@ class eppConnection {
         }
         if (($response = $this->writeandread($eppRequest)) instanceof $check) {
             // $response->Success() will trigger an eppException when fails have occurred
+            if ((is_array($this->exceptions)) && (count($this->exceptions)>0)) {
+                foreach($this->exceptions as $exceptionhandler) {
+                    $response->addException($exceptionhandler);
+                }
+            }
             $response->Success();
             return $response;
         } else {
@@ -748,7 +755,7 @@ class eppConnection {
         /*
          * $content->hello is only set if this is an instance or a sub-instance of an eppHelloRequest
          */
-        if (!($content->hello)) {
+        if ((!($content->hello)) && (!($content->login))) {
             /**
              * Add used namespaces to the correct places in the XML
              */
@@ -762,6 +769,9 @@ class eppConnection {
         }
         $content->formatOutput = true;
         $this->writeLog($content->saveXML(null, LIBXML_NOEMPTYTAG),"WRITE");
+
+        //print_r($content->saveXML(null, LIBXML_NOEMPTYTAG)); #XML Debug Output
+
         $content->formatOutput = false;
         if ($this->write($content->saveXML(null, LIBXML_NOEMPTYTAG))) {
             $readcounter = 0;
@@ -927,15 +937,6 @@ class eppConnection {
     }
 
     /**
-     * Add a service to the list of services
-     * @param string $xmlns
-     * @param string $namespace
-     */
-    public function addService($xmlns, $namespace) {
-        $this->objuri[$xmlns] = $namespace;
-    }
-
-    /**
      * Get all supported services
      * @return array
      */
@@ -972,44 +973,25 @@ class eppConnection {
     }
 
     /**
+     * Add a Service (OBJuri)
+     * @param $xmlns
+     * @param $namespace
+     */
+    public function addService($xmlns, $namespace) {
+        $this->objuri[$namespace] = $xmlns;
+    }
+
+    /**
+     * Add an extension (EXTuri)
      * @param string $xmlns
      * @param string $namespace
      */
     public function addExtension($xmlns, $namespace) {
         $this->exturi[$namespace] = $xmlns;
-        // Include the extension data, request and response files
-        /*
-        $pos = strrpos($namespace,'/');
-        if ($pos!==false) {
-            $path = substr($namespace,$pos+1,999);
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                $includepath = dirname(__FILE__).'\\eppExtensions\\'.$path.'\\includes.php';
-            } else {
-                $includepath = dirname(__FILE__).'/eppExtensions/'.$path.'/includes.php';
-            }
+    }
 
-        } else {
-            $pos = strrpos($namespace,':');
-            if ($pos!==false) {
-                $path = substr($namespace,$pos+1,999);
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                    $includepath = dirname(__FILE__).'\\eppExtensions\\'.$path.'\\includes.php';
-                } else {
-                    $includepath = dirname(__FILE__).'/eppExtensions/'.$path.'/includes.php';
-                }
-
-            } else {
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                    $includepath = dirname(__FILE__).'\\eppExtensions\\'.$namespace.'\\includes.php';
-                } else {
-                    $includepath = dirname(__FILE__).'/eppExtensions/'.$namespace.'/includes.php';
-                }
-
-            }
-        }
-        if (is_file($includepath)) {
-            include_once($includepath);
-        } */
+    public function addException($exceptionhandler) {
+        $this->exceptions[] = $exceptionhandler;
     }
 
     public function removeExtension($namespace) {
@@ -1051,6 +1033,12 @@ class eppConnection {
             } else {
                 $this->setPort(700);
             }
+            if (array_key_exists('timeout',$result)) {
+                $this->setTimeout($result['timeout']);
+            } else {
+                $this->setTimeout(10);
+            }
+
             if (array_key_exists('certificatefile',$result) && array_key_exists('certificatepassword',$result)) {
                 // Enter the path to your certificate and the password here
                 $this->enableCertification($result['certificatefile'], $result['certificatepassword']);
